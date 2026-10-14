@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>FMCG: брендинг и упаковка — Тутков/Будков</title>
+<meta name="description" content="Портфолио агентства Тутков/Будков: брендинг и упаковка в FMCG.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #0b0b0c;
+    --slide-bg: #0b0b0c;
+    --accent: #ffffff;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  /* scroll-snap container */
+  .scroller {
+    scroll-snap-type: y proximity;
+  }
+  .deck {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .slide {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--slide-bg);
+    overflow: hidden;
+    scroll-snap-align: start;
+    scroll-margin-top: 64px;
+  }
+  .slide img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .slide.has-video img {
+    transition: transform 0.35s ease, filter 0.35s ease;
+  }
+  .slide.has-video:hover img {
+    transform: scale(1.015);
+    filter: brightness(1.05);
+  }
+  .hotspot {
+    position: absolute;
+    border: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    display: block;
+  }
+  .hotspot-video { -webkit-tap-highlight-color: transparent; }
+  .hotspot-link { -webkit-tap-highlight-color: transparent; }
+
+  /* top progress hairline */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    z-index: 60;
+  }
+  .topbar-fill {
+    height: 100%;
+    width: 0%;
+    background: #fff;
+    transition: width 0.1s linear;
+  }
+
+  /* sticky chapter nav */
+  .chapternav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+    padding: 16px 28px;
+    background: rgba(11,11,12,0.72);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .brand {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    font-size: 13px;
+    white-space: nowrap;
+    opacity: 0.9;
+    padding-right: 8px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+  }
+  .chapter-item {
+    position: relative;
+  }
+  .chapter-link {
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 13px;
+    white-space: nowrap;
+    padding: 6px 2px;
+    position: relative;
+    display: inline-block;
+    transition: color 0.2s ease;
+  }
+  .chapter-link::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 100%;
+    bottom: -1px;
+    height: 2px;
+    background: #fff;
+    transition: right 0.25s ease;
+  }
+
+  /* hover dropdown of individual cases within a chapter (desktop/pointer only) */
+  .chapter-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    /* no gap to the menu item above: a real empty strip there would drop :hover
+       mid-transition and make the dropdown vanish while the cursor is still moving */
+    margin-top: 0;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    min-width: 260px;
+    border-radius: 10px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+  }
+  .chapter-dropdown-inner {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border-radius: 10px;
+    background: rgba(18,18,20,0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+  }
+  .chapter-sub-link {
+    color: rgba(255,255,255,0.68);
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: nowrap;
+    padding: 7px 10px;
+    border-radius: 6px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .chapter-sub-client {
+    color: rgba(255,255,255,0.45);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+  .chapter-sub-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+  }
+  .chapter-sub-link:hover .chapter-sub-client {
+    color: rgba(255,255,255,0.7);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .chapter-item:hover .chapter-dropdown {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+  }
+  .chapter-link:hover { color: rgba(255,255,255,0.85); }
+  .chapter-link.active { color: #fff; }
+  .chapter-link.active::after { right: 0; }
+
+  /* floating slide counter / prev-next */
+  .slidenav {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.18);
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .slidenav.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .slidenav button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  .slidenav button:hover { background: rgba(255,255,255,0.15); }
+  .slidenav button:disabled { opacity: 0.3; cursor: default; }
+  .slidenav button:disabled:hover { background: transparent; }
+  .slide-counter {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255,255,255,0.8);
+    min-width: 62px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* inline video playback (replaces the slide image in place) */
+  .slide-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    z-index: 5;
+    background: #000;
+  }
+  .slide-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 6;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .slide-close:hover { background: rgba(0,0,0,0.75); }
+
+  @media (max-width: 700px) {
+    .chapternav { gap: 18px; padding: 12px 16px; }
+    .brand { display: none; }
+  }
+
+  .chapternav { gap: 4px 22px; }
+  .chapter-sub-link { white-space: normal; max-width: 340px; }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-fill" id="topbarFill"></div></div>
+
+<nav class="chapternav">
+  <span class="brand">ТУТКОВБУДКОВ</span>
+  <div class="chapter-item"><a href="#page-2" class="chapter-link" data-chapter-idx="0">Об агентстве</a></div>
+  <div class="chapter-item">
+      <a href="#page-5" class="chapter-link" data-chapter-idx="1">Портфолио FMCG</a>
+      <div class="chapter-dropdown">
+        <div class="chapter-dropdown-inner">
+          <a href="#page-7" class="chapter-sub-link">Palmolive</a>
+          <a href="#page-12" class="chapter-sub-link">Colgate</a>
+          <a href="#page-18" class="chapter-sub-link">ДА!</a>
+          <a href="#page-20" class="chapter-sub-link">Say</a>
+          <a href="#page-25" class="chapter-sub-link">ОКЕЙ</a>
+          <a href="#page-33" class="chapter-sub-link">Мираторг</a>
+          <a href="#page-47" class="chapter-sub-link">Карельские рыбные заводы</a>
+          <a href="#page-53" class="chapter-sub-link">Stivado</a>
+          <a href="#page-57" class="chapter-sub-link">Дона</a>
+          <a href="#page-61" class="chapter-sub-link">Горная поляна</a>
+          <a href="#page-64" class="chapter-sub-link">Пузыри</a>
+          <a href="#page-70" class="chapter-sub-link">СушиВёсла</a>
+          <a href="#page-75" class="chapter-sub-link">Dutybox</a>
+          <a href="#page-78" class="chapter-sub-link">Grass</a>
+        </div>
+      </div>
+    </div>
+</nav>
+
+<div class="scroller">
+<div class="deck">
+    <section class="slide" id="page-1" data-page="1" data-chapter="-1">
+      <img src="img/page-001.jpg" alt="Слайд 1" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-2" data-page="2" data-chapter="0">
+      <img src="img/page-002.jpg" alt="Слайд 2" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-3" data-page="3" data-chapter="0">
+      <img src="img/page-003.jpg" alt="Слайд 3" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-4" data-page="4" data-chapter="0">
+      <img src="img/page-004.jpg" alt="Слайд 4" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-5" data-page="5" data-chapter="1">
+      <img src="img/page-005.jpg" alt="Слайд 5" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-6" data-page="6" data-chapter="1">
+      <img src="img/page-006.jpg" alt="Слайд 6" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-7" data-page="7" data-chapter="1">
+      <img src="img/page-007.jpg" alt="Слайд 7" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-8" data-page="8" data-chapter="1">
+      <img src="img/page-008.jpg" alt="Слайд 8" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-9" data-page="9" data-chapter="1">
+      <img src="img/page-009.jpg" alt="Слайд 9" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-10" data-page="10" data-chapter="1">
+      <img src="img/page-010.jpg" alt="Слайд 10" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-11" data-page="11" data-chapter="1">
+      <img src="img/page-011.jpg" alt="Слайд 11" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-12" data-page="12" data-chapter="1">
+      <img src="img/page-012.jpg" alt="Слайд 12" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-13" data-page="13" data-chapter="1">
+      <img src="img/page-013.jpg" alt="Слайд 13" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-14" data-page="14" data-chapter="1">
+      <img src="img/page-014.jpg" alt="Слайд 14" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-15" data-page="15" data-chapter="1">
+      <img src="img/page-015.jpg" alt="Слайд 15" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-16" data-page="16" data-chapter="1">
+      <img src="img/page-016.jpg" alt="Слайд 16" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-17" data-page="17" data-chapter="1">
+      <img src="img/page-017.jpg" alt="Слайд 17" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-18" data-page="18" data-chapter="1">
+      <img src="img/page-018.jpg" alt="Слайд 18" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-19" data-page="19" data-chapter="1">
+      <img src="img/page-019.jpg" alt="Слайд 19" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-20" data-page="20" data-chapter="1">
+      <img src="img/page-020.jpg" alt="Слайд 20" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-21" data-page="21" data-chapter="1">
+      <img src="img/page-021.jpg" alt="Слайд 21" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-22" data-page="22" data-chapter="1">
+      <img src="img/page-022.jpg" alt="Слайд 22" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-23" data-page="23" data-chapter="1">
+      <img src="img/page-023.jpg" alt="Слайд 23" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-24" data-page="24" data-chapter="1">
+      <img src="img/page-024.jpg" alt="Слайд 24" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-25" data-page="25" data-chapter="1">
+      <img src="img/page-025.jpg" alt="Слайд 25" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-26" data-page="26" data-chapter="1">
+      <img src="img/page-026.jpg" alt="Слайд 26" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-27" data-page="27" data-chapter="1">
+      <img src="img/page-027.jpg" alt="Слайд 27" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-28" data-page="28" data-chapter="1">
+      <img src="img/page-028.jpg" alt="Слайд 28" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-29" data-page="29" data-chapter="1">
+      <img src="img/page-029.jpg" alt="Слайд 29" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-30" data-page="30" data-chapter="1">
+      <img src="img/page-030.jpg" alt="Слайд 30" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-31" data-page="31" data-chapter="1">
+      <img src="img/page-031.jpg" alt="Слайд 31" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-32" data-page="32" data-chapter="1">
+      <img src="img/page-032.jpg" alt="Слайд 32" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-33" data-page="33" data-chapter="1">
+      <img src="img/page-033.jpg" alt="Слайд 33" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-34" data-page="34" data-chapter="1">
+      <img src="img/page-034.jpg" alt="Слайд 34" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-35" data-page="35" data-chapter="1">
+      <img src="img/page-035.jpg" alt="Слайд 35" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-36" data-page="36" data-chapter="1">
+      <img src="img/page-036.jpg" alt="Слайд 36" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-37" data-page="37" data-chapter="1">
+      <img src="img/page-037.jpg" alt="Слайд 37" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-38" data-page="38" data-chapter="1">
+      <img src="img/page-038.jpg" alt="Слайд 38" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-39" data-page="39" data-chapter="1">
+      <img src="img/page-039.jpg" alt="Слайд 39" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-40" data-page="40" data-chapter="1">
+      <img src="img/page-040.jpg" alt="Слайд 40" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-41" data-page="41" data-chapter="1">
+      <img src="img/page-041.jpg" alt="Слайд 41" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-42" data-page="42" data-chapter="1">
+      <img src="img/page-042.jpg" alt="Слайд 42" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-43" data-page="43" data-chapter="1">
+      <img src="img/page-043.jpg" alt="Слайд 43" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-44" data-page="44" data-chapter="1">
+      <img src="img/page-044.jpg" alt="Слайд 44" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-45" data-page="45" data-chapter="1">
+      <img src="img/page-045.jpg" alt="Слайд 45" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-46" data-page="46" data-chapter="1">
+      <img src="img/page-046.jpg" alt="Слайд 46" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-47" data-page="47" data-chapter="1">
+      <img src="img/page-047.jpg" alt="Слайд 47" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-48" data-page="48" data-chapter="1">
+      <img src="img/page-048.jpg" alt="Слайд 48" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-49" data-page="49" data-chapter="1">
+      <img src="img/page-049.jpg" alt="Слайд 49" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-50" data-page="50" data-chapter="1">
+      <img src="img/page-050.jpg" alt="Слайд 50" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-51" data-page="51" data-chapter="1">
+      <img src="img/page-051.jpg" alt="Слайд 51" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-52" data-page="52" data-chapter="1">
+      <img src="img/page-052.jpg" alt="Слайд 52" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-53" data-page="53" data-chapter="1">
+      <img src="img/page-053.jpg" alt="Слайд 53" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-54" data-page="54" data-chapter="1">
+      <img src="img/page-054.jpg" alt="Слайд 54" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-55" data-page="55" data-chapter="1">
+      <img src="img/page-055.jpg" alt="Слайд 55" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-56" data-page="56" data-chapter="1">
+      <img src="img/page-056.jpg" alt="Слайд 56" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-57" data-page="57" data-chapter="1">
+      <img src="img/page-057.jpg" alt="Слайд 57" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-58" data-page="58" data-chapter="1">
+      <img src="img/page-058.jpg" alt="Слайд 58" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-59" data-page="59" data-chapter="1">
+      <img src="img/page-059.jpg" alt="Слайд 59" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-60" data-page="60" data-chapter="1">
+      <img src="img/page-060.jpg" alt="Слайд 60" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-61" data-page="61" data-chapter="1">
+      <img src="img/page-061.jpg" alt="Слайд 61" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-62" data-page="62" data-chapter="1">
+      <img src="img/page-062.jpg" alt="Слайд 62" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-63" data-page="63" data-chapter="1">
+      <img src="img/page-063.jpg" alt="Слайд 63" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-64" data-page="64" data-chapter="1">
+      <img src="img/page-064.jpg" alt="Слайд 64" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-65" data-page="65" data-chapter="1">
+      <img src="img/page-065.jpg" alt="Слайд 65" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-66" data-page="66" data-chapter="1">
+      <img src="img/page-066.jpg" alt="Слайд 66" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-67" data-page="67" data-chapter="1">
+      <img src="img/page-067.jpg" alt="Слайд 67" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-68" data-page="68" data-chapter="1">
+      <img src="img/page-068.jpg" alt="Слайд 68" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-69" data-page="69" data-chapter="1">
+      <img src="img/page-069.jpg" alt="Слайд 69" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-70" data-page="70" data-chapter="1">
+      <img src="img/page-070.jpg" alt="Слайд 70" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-71" data-page="71" data-chapter="1">
+      <img src="img/page-071.jpg" alt="Слайд 71" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-72" data-page="72" data-chapter="1">
+      <img src="img/page-072.jpg" alt="Слайд 72" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-73" data-page="73" data-chapter="1">
+      <img src="img/page-073.jpg" alt="Слайд 73" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-74" data-page="74" data-chapter="1">
+      <img src="img/page-074.jpg" alt="Слайд 74" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-75" data-page="75" data-chapter="1">
+      <img src="img/page-075.jpg" alt="Слайд 75" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-76" data-page="76" data-chapter="1">
+      <img src="img/page-076.jpg" alt="Слайд 76" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-77" data-page="77" data-chapter="1">
+      <img src="img/page-077.jpg" alt="Слайд 77" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-78" data-page="78" data-chapter="1">
+      <img src="img/page-078.jpg" alt="Слайд 78" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-79" data-page="79" data-chapter="1">
+      <img src="img/page-079.jpg" alt="Слайд 79" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-80" data-page="80" data-chapter="1">
+      <img src="img/page-080.jpg" alt="Слайд 80" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-81" data-page="81" data-chapter="1">
+      <img src="img/page-081.jpg" alt="Слайд 81" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-82" data-page="82" data-chapter="1">
+      <img src="img/page-082.jpg" alt="Слайд 82" loading="lazy" draggable="false">
+    </section>
+    <section class="slide" id="page-83" data-page="83" data-chapter="-1">
+      <img src="img/page-083.jpg" alt="Слайд 83" loading="lazy" draggable="false">
+    </section>
+</div>
+</div>
+
+<div class="slidenav" id="slidenav">
+  <button id="prevSlide" aria-label="Предыдущий слайд">&#8249;</button>
+  <span class="slide-counter" id="slideCounter">1 / 83</span>
+  <button id="nextSlide" aria-label="Следующий слайд">&#8250;</button>
+</div>
+
+<script>
+(function() {
+  var N_PAGES = 175;
+  var CHAPTERS = [{"title": "Об агентстве", "start": 1}, {"title": "Фестивальные кейсы", "start": 10}, {"title": "FMCG", "start": 56}, {"title": "E-grocery", "start": 75}, {"title": "Non-food", "start": 123}];
+
+  function playInline(btn) {
+    var section = btn.closest('.slide');
+    if (!section || section.querySelector('.slide-video')) return;
+
+    var iframe = document.createElement('iframe');
+    iframe.className = 'slide-video';
+    iframe.src = btn.getAttribute('data-embed');
+    iframe.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media';
+    iframe.allowFullscreen = true;
+
+    // Vimeo letterboxes/pillarboxes a video whose native aspect ratio doesn't match our
+    // 16:9 slide. When we know the real aspect (baked in at build time), scale the iframe
+    // up and center it so the video content covers the full slide instead of showing bars.
+    var videoAspect = parseFloat(btn.getAttribute('data-aspect'));
+    if (videoAspect) {
+      var containerAspect = 16 / 9;
+      var scale = Math.max(containerAspect / videoAspect, videoAspect / containerAspect);
+      if (scale > 1.01 && scale <= 1.4) {
+        iframe.style.width = (scale * 100) + '%';
+        iframe.style.height = (scale * 100) + '%';
+        iframe.style.left = '50%';
+        iframe.style.top = '50%';
+        iframe.style.right = 'auto';
+        iframe.style.bottom = 'auto';
+        iframe.style.transform = 'translate(-50%, -50%)';
+      } else if (scale > 1.01) {
+        // too wide/narrow to crop safely: fit the iframe to the video so the bars are the
+        // slide's own black background, not the (white) empty canvas of the iframe.
+        iframe.style.left = '50%';
+        iframe.style.top = '50%';
+        iframe.style.right = 'auto';
+        iframe.style.bottom = 'auto';
+        iframe.style.transform = 'translate(-50%, -50%)';
+        if (videoAspect > containerAspect) {
+          iframe.style.height = (100 * containerAspect / videoAspect) + '%';
+        } else {
+          iframe.style.width = (100 * videoAspect / containerAspect) + '%';
+        }
+      }
+    }
+    section.style.background = '#000';
+    var slideImg = section.querySelector('img');
+    if (slideImg) slideImg.style.visibility = 'hidden';
+
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'slide-close';
+    closeBtn.setAttribute('aria-label', 'Закрыть видео');
+    closeBtn.innerHTML = '&times;';
+    closeBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      iframe.remove();
+      closeBtn.remove();
+      section.style.background = '';
+      if (slideImg) slideImg.style.visibility = '';
+      section.querySelectorAll('.hotspot').forEach(function(h) { h.style.visibility = ''; });
+    });
+
+    section.querySelectorAll('.hotspot').forEach(function(h) { h.style.visibility = 'hidden'; });
+    section.appendChild(iframe);
+    section.appendChild(closeBtn);
+  }
+
+  document.querySelectorAll('.hotspot-video').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      playInline(btn);
+    });
+  });
+
+  // scroll progress
+  var fill = document.getElementById('topbarFill');
+  function onScroll() {
+    var h = document.documentElement;
+    var scrolled = h.scrollTop;
+    var max = h.scrollHeight - h.clientHeight;
+    var pct = max > 0 ? (scrolled / max) * 100 : 0;
+    fill.style.width = pct + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive: true});
+  onScroll();
+
+  // active slide tracking via IntersectionObserver
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var chapterLinks = Array.prototype.slice.call(document.querySelectorAll('.chapter-link'));
+  var counterEl = document.getElementById('slideCounter');
+  var slidenav = document.getElementById('slidenav');
+  var prevBtn = document.getElementById('prevSlide');
+  var nextBtn = document.getElementById('nextSlide');
+  var currentIndex = 0;
+
+  function setActiveChapter(chapterIdx) {
+    chapterLinks.forEach(function(a) {
+      a.classList.toggle('active', parseInt(a.getAttribute('data-chapter-idx'), 10) === chapterIdx);
+    });
+  }
+
+  function updateCurrent(index) {
+    currentIndex = index;
+    var page = parseInt(slides[index].getAttribute('data-page'), 10);
+    counterEl.textContent = (index + 1) + ' / ' + slides.length;
+    setActiveChapter(parseInt(slides[index].getAttribute('data-chapter'), 10));
+    prevBtn.disabled = index <= 0;
+    nextBtn.disabled = index >= slides.length - 1;
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    var best = null;
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        if (!best || entry.intersectionRatio > best.intersectionRatio) best = entry;
+      }
+    });
+    if (best) {
+      var idx = slides.indexOf(best.target);
+      if (idx !== -1) updateCurrent(idx);
+    }
+  }, { threshold: [0.25, 0.5, 0.75], rootMargin: '-64px 0px -20% 0px' });
+  slides.forEach(function(s) { observer.observe(s); });
+
+  function goTo(index) {
+    index = Math.max(0, Math.min(slides.length - 1, index));
+    slides[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  prevBtn.addEventListener('click', function() { goTo(currentIndex - 1); });
+  nextBtn.addEventListener('click', function() { goTo(currentIndex + 1); });
+
+  document.addEventListener('keydown', function(e) {
+    var tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); goTo(currentIndex + 1); }
+    else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goTo(currentIndex - 1); }
+  });
+
+  var revealTimer = null;
+  window.addEventListener('scroll', function() {
+    slidenav.classList.add('visible');
+    clearTimeout(revealTimer);
+    revealTimer = setTimeout(function() { slidenav.classList.remove('visible'); }, 2200);
+  }, {passive: true});
+
+  updateCurrent(0);
+})();
+</script>
+
+</body>
+</html>
